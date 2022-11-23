@@ -1,7 +1,11 @@
-import main
+import queue
+import time
+
+import numpy as np
+import FSM
 
 ##string w/ oneven 'a' en even 'b'
-def odd_a_even_b():
+def odd_a_even_b(str):
     rules = [
         ['XV','b','XX'],
         ['XX','b','XV'],
@@ -13,13 +17,12 @@ def odd_a_even_b():
         ['XV','a','VV']]
 
     accepting = ['VV']
-    tape = ['a','b','b']
 
-    g = main.graph(rules, accepting, 'circo')
+    g = FSM.graph(rules, accepting, 'circo')
     g.format = 'pdf'
     g.render(directory='graphviz_renders', view=True)
 
-    print(main.eval_FSM(rules, tape, accepting))
+    print(FSM.eval_FSM_tape(rules, str, accepting))
 
 # [ ][ ]  [X][ ]  [ ][X]  [ ][ ]  [ ][ ]  [X][O]  [X][ ]  [X][ ]  [O][X]
 # [ ][ ], [ ][ ], [ ][ ], [X][ ], [ ][X], [ ][ ], [O][ ], [ ][O], [ ][ ],
@@ -34,7 +37,7 @@ def odd_a_even_b():
 # [X][X], [X][X]
 # r28-A   r29-A
 
-def tictactoe():
+def tictactoe_old():
     rules = [
         ['[ ][ ][ ][ ]', '0', '[X][ ][ ][ ]'], #r1
         ['[ ][ ][ ][ ]', '1', '[ ][X][ ][ ]'],
@@ -93,27 +96,122 @@ def tictactoe():
         '[O][ ][X][X]'  #r28
     ]
 
-    g = main.graph(rules, accepting)
+    g = FSM.graph(rules, accepting)
     g.format = 'pdf'
     g.render(directory='graphviz_renders', view=True)
 
-    main.eval_FSM_IO(rules, accepting)
+    FSM.eval_FSM_IO(rules, accepting)
 
 def gen_ganzenbord():
     res = []
     for i in range(63):
-        # if((i/9==1) or ((i+4)/9==1)):
-        #     rule = [i, j+1, i+j+1]
-        # else:
-        for roll in range(1,7):
-            n = roll
-            while ((i+n)/9 == 1) or ((i+4)/9 == 1):
-                n = n+roll
-
-
-            rule = [i, j+1, i+j+1]
-            res.append(rule)
+        #print('i: ' + str(i))
+        if not ((i/9 == 1) or ((i+4)/9 == 1) or (i == 6) or (i == 42) or (i == 58)):
+            for roll in range(1,7):
+                #print('r: ' + str(roll))
+                n = roll
+                n_old = 0
+                while(n != n_old):
+                    n_old = n
+                    if((i+n)/9 == 1) or ((i+n+4)/9 == 1):
+                        n = n+roll
+                    if((i+n) == 6):
+                        n = n+6
+                    if((i+n) == 42):
+                        n = n-5
+                    if((i+n) == 58):
+                        n = n-58
+                    if((i+n) > 63):
+                        n = n - 2*((i+n)-63)
+                rule = [i, roll, i+n]
+                res.append(rule)
     return res
 
-#odd_a_even_b()
-print(gen_ganzenbord())
+def ganzenbord():
+    rules = gen_ganzenbord()
+    accepting = ['63']
+    g = FSM.graph(rules, accepting, 'fdp')
+    g.format = 'pdf'
+    g.render(directory='graphviz_renders', view=True)
+    FSM.eval_FSM_rand(rules, accepting, 1, 6)
+
+
+def game_over_check(board):
+    m = board.copy()
+    m[m==0] = False
+    m[m!=0] = True
+    v = np.all(np.logical_and(m, (board == board[0,:])), axis=0)
+    h = np.all(np.logical_and(m.T, (board.T == board.T[0,:])), axis=0)
+    diag = board.diagonal()
+    diag2 = np.fliplr(board).diagonal()
+    d = (np.all(diag == diag[0]) and (diag[0]!=0)) or (np.all(diag2 == diag2[0]) and (diag2[0]!=0))
+    return np.any(v) or np.any(h) or d
+
+
+def board_to_string(m):
+    res = '<<table border="0">'
+    for i in m:
+        str = '<tr><td align="text">'
+        for j in i:
+            if(j == 0): x = ' '
+            elif(j == 1): x = 'X'
+            else: x = 'O'
+            str += '[' + x + ']'
+        str += '</td></tr>'
+        res += str
+    res += '</table>>'
+    return res
+
+
+def gen_tictactoe(n):
+    accepting = []
+    edges = []
+    q = queue.Queue()
+    m = np.zeros((n,n))
+    q.put(m)
+    count = 0
+    while(not q.empty()):
+        temp = q.get().copy()
+        count += 1
+        for i in range(n):
+            for j in range(n):
+                m = temp.copy()
+                if(m[i][j] == 0):
+                    edge = [board_to_string(m)]
+                    c = np.unique(m, return_counts=True)
+                    if len(c[1])!=2 and ((len(c[1]) == 1) or (c[1][0] == c[1][2])):
+                        m[i][j] = 1
+                    else:
+                        m[i][j] = -1
+                    edge.append(('(' + str(i) + ',' + str(j) + ')'))
+                    edge.append(board_to_string(m))
+                    edges.append(edge)
+                    if(not game_over_check(m)):
+                        q.put(m)
+                    else:
+                        accepting.append(edge[2])
+    return edges, accepting
+
+
+def tictactoe(n):
+    t = time.time()
+    rules, accepting = gen_tictactoe(n)
+    #print(accepting)
+    g = FSM.graph(rules, accepting, 'dot')
+    g.format = 'bmp'
+    print(time.time() - t)
+    g.render(directory='graphviz_renders', view=True)
+    print(time.time() - t)
+
+#board = np.array([[1,0,0],
+#                  [1,-1,1],
+#                  [-1,0,0]])
+
+# board = np.array([[1,0],
+#                   [-1,0]])
+
+#print(game_over_check(board))
+#board_to_string(board)
+#odd_a_even_b('abb')
+#ganzenbord()
+#tictactoe(2)
