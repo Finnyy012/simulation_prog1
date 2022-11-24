@@ -2,17 +2,25 @@ import examples
 import FSM
 
 print('FSM demo')
-q = True
-while(q):
-    op = input('kies demo: \n\t(1) oneven a even b'
-                            '\n\t(2) ganzenbord w/o registers'
-                            '\n\t(3) ganzenbord w/ registers'
-                            '\n\t(4) boter, kaas & eieren 2x2'
-                            '\n\t(6) quit')
-    if(op == 1): examples.odd_a_even_b(input('input string {a,b}: '))
-    elif(op == 2): examples.ganzenbord()
-    elif(op == 3): print('WIP')
-    elif(op == 4): examples.tictactoe()
-    elif(op == 6): q = False
-    else: print('invalid input')
+while(True):
+    try:
+        op = int(input('kies demo: \n\t(1) oneven a even b'
+                                '\n\t(2) ganzenbord w/o registers'
+                                '\n\t(3) koffieautomaat'
+                                '\n\t(4) boter, kaas & eieren 2x2'
+                                '\n\t(4) boter, kaas & eieren 3x3 (duurt te lang)'
+                                '\n\t(6) quit\n'))
+        if (op == 6): break
+        elif (op == 1): examples.odd_a_even_b(input('input string {a,b}: '))
+        elif (op == 2): examples.ganzenbord()
+        elif (op == 3): examples.koffieautomaat()
+        elif (op == 4): examples.tictactoe(2)
+        elif (op == 4): examples.tictactoe(3)
+        else: print('invalid input')
+        input("druk op Enter om door te gaan")
+
+    except:
+        print('invalid input')
+
+
 

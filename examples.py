@@ -4,6 +4,7 @@ import time
 import numpy as np
 import FSM
 
+
 ##string w/ oneven 'a' en even 'b'
 def odd_a_even_b(str):
     rules = [
@@ -24,76 +25,64 @@ def odd_a_even_b(str):
 
     print(FSM.eval_FSM_tape(rules, str, accepting))
 
-# [ ][ ]  [X][ ]  [ ][X]  [ ][ ]  [ ][ ]  [X][O]  [X][ ]  [X][ ]  [O][X]
-# [ ][ ], [ ][ ], [ ][ ], [X][ ], [ ][X], [ ][ ], [O][ ], [ ][O], [ ][ ],
-# r1      r2      r3      r4      r5      r6      r7      r8      r9
-# [ ][X]  [ ][X]  [O][ ]  [ ][O]  [ ][ ]  [O][ ]  [ ][O]  [ ][ ]  [X][O]
-# [O][ ], [ ][O], [X][ ], [X][ ], [X][O], [ ][X], [ ][X], [O][X], [X][ ],
-# r10     r11     r12     r13     r14     r15     r16     r17     r18-A
-# [X][O]  [X][X]  [X][ ]  [X][X]  [X][ ]  [O][X]  [O][X]  [ ][X]  [ ][X]
-# [ ][X], [O][ ], [O][X], [ ][O], [X][O], [X][ ], [ ][X], [O][X], [X][O],
-# r19     r20-A   r21     r22-A   r23-A   r24     r25-A   r26-A   r27
-# [O][ ]  [ ][O]
-# [X][X], [X][X]
-# r28-A   r29-A
 
 def tictactoe_old():
     rules = [
-        ['[ ][ ][ ][ ]', '0', '[X][ ][ ][ ]'], #r1
+        ['[ ][ ][ ][ ]', '0', '[X][ ][ ][ ]'],
         ['[ ][ ][ ][ ]', '1', '[ ][X][ ][ ]'],
         ['[ ][ ][ ][ ]', '2', '[ ][ ][X][ ]'],
         ['[ ][ ][ ][ ]', '3', '[ ][ ][ ][X]'],
-        ['[X][ ][ ][ ]', '1', '[X][O][ ][ ]'], #r2
+        ['[X][ ][ ][ ]', '1', '[X][O][ ][ ]'],
         ['[X][ ][ ][ ]', '2', '[X][ ][O][ ]'],
         ['[X][ ][ ][ ]', '3', '[X][ ][ ][O]'],
-        ['[ ][X][ ][ ]', '0', '[O][X][ ][ ]'], #r3
+        ['[ ][X][ ][ ]', '0', '[O][X][ ][ ]'],
         ['[ ][X][ ][ ]', '2', '[ ][X][O][ ]'],
         ['[ ][X][ ][ ]', '3', '[ ][X][ ][O]'],
-        ['[ ][ ][X][ ]', '0', '[O][ ][X][ ]'], #r4
+        ['[ ][ ][X][ ]', '0', '[O][ ][X][ ]'],
         ['[ ][ ][X][ ]', '1', '[ ][O][X][ ]'],
         ['[ ][ ][X][ ]', '3', '[ ][ ][X][O]'],
-        ['[ ][ ][ ][X]', '0', '[O][ ][ ][X]'], #r5
+        ['[ ][ ][ ][X]', '0', '[O][ ][ ][X]'],
         ['[ ][ ][ ][X]', '1', '[ ][O][ ][X]'],
         ['[ ][ ][ ][X]', '2', '[ ][ ][O][X]'],
-        ['[X][O][ ][ ]', '2', '[X][O][X][ ]'], #r6
+        ['[X][O][ ][ ]', '2', '[X][O][X][ ]'],
         ['[X][O][ ][ ]', '3', '[X][O][ ][X]'],
-        ['[X][ ][O][ ]', '1', '[X][X][O][ ]'], #r7
+        ['[X][ ][O][ ]', '1', '[X][X][O][ ]'],
         ['[X][ ][O][ ]', '3', '[X][ ][O][X]'],
-        ['[X][ ][ ][O]', '1', '[X][X][ ][O]'], #r8
+        ['[X][ ][ ][O]', '1', '[X][X][ ][O]'],
         ['[X][ ][ ][O]', '2', '[X][ ][X][O]'],
-        ['[O][X][ ][ ]', '2', '[O][X][X][ ]'], #r9
+        ['[O][X][ ][ ]', '2', '[O][X][X][ ]'],
         ['[O][X][ ][ ]', '3', '[O][X][ ][X]'],
-        ['[ ][X][O][ ]', '0', '[X][X][O][ ]'], #r10
+        ['[ ][X][O][ ]', '0', '[X][X][O][ ]'],
         ['[ ][X][O][ ]', '3', '[ ][X][O][X]'],
-        ['[ ][X][ ][O]', '0', '[X][X][ ][O]'], #r11
+        ['[ ][X][ ][O]', '0', '[X][X][ ][O]'],
         ['[ ][X][ ][O]', '2', '[ ][X][X][O]'],
-        ['[O][ ][X][ ]', '1', '[O][X][X][ ]'], #r12
+        ['[O][ ][X][ ]', '1', '[O][X][X][ ]'],
         ['[O][ ][X][ ]', '3', '[O][ ][X][X]'],
-        ['[ ][O][X][ ]', '0', '[X][O][X][ ]'], #r13
+        ['[ ][O][X][ ]', '0', '[X][O][X][ ]'],
         ['[ ][O][X][ ]', '3', '[ ][O][X][X]'],
-        ['[ ][ ][X][O]', '0', '[X][ ][X][O]'], #r14
+        ['[ ][ ][X][O]', '0', '[X][ ][X][O]'],
         ['[ ][ ][X][O]', '1', '[ ][X][X][O]'],
-        ['[O][ ][ ][X]', '1', '[O][X][ ][X]'], #r15
+        ['[O][ ][ ][X]', '1', '[O][X][ ][X]'],
         ['[O][ ][ ][X]', '2', '[O][ ][X][X]'],
-        ['[ ][O][ ][X]', '0', '[X][O][ ][X]'], #r16
+        ['[ ][O][ ][X]', '0', '[X][O][ ][X]'],
         ['[ ][O][ ][X]', '2', '[ ][O][X][X]'],
-        ['[ ][ ][O][X]', '0', '[X][ ][O][X]'], #r17
+        ['[ ][ ][O][X]', '0', '[X][ ][O][X]'],
         ['[ ][ ][O][X]', '1', '[ ][X][O][X]'],
-        ['[X][O][ ][X]', '2', '[X][O][O][X]'], #r19
-        ['[X][ ][O][X]', '1', '[X][O][O][X]'], #r21
-        ['[O][X][X][ ]', '3', '[O][X][X][O]'], #r24
-        ['[ ][X][X][O]', '0', '[O][X][X][O]'] #r27
+        ['[X][O][ ][X]', '2', '[X][O][O][X]'],
+        ['[X][ ][O][X]', '1', '[X][O][O][X]'],
+        ['[O][X][X][ ]', '3', '[O][X][X][O]'],
+        ['[ ][X][X][O]', '0', '[O][X][X][O]']
     ]
 
     accepting = [
-        '[X][O][X][ ]', #r18
-        '[X][X][O][ ]', #r20
-        '[X][X][ ][O]', #r22
-        '[X][ ][X][O]', #r23
-        '[O][X][ ][X]', #r25
-        '[ ][X][O][X]', #r26
-        '[ ][O][X][X]', #r29
-        '[O][ ][X][X]'  #r28
+        '[X][O][X][ ]',
+        '[X][X][O][ ]',
+        '[X][X][ ][O]',
+        '[X][ ][X][O]',
+        '[O][X][ ][X]',
+        '[ ][X][O][X]',
+        '[ ][O][X][X]',
+        '[O][ ][X][X]'
     ]
 
     g = FSM.graph(rules, accepting)
@@ -102,13 +91,12 @@ def tictactoe_old():
 
     FSM.eval_FSM_IO(rules, accepting)
 
+
 def gen_ganzenbord():
     res = []
     for i in range(63):
-        #print('i: ' + str(i))
         if not ((i/9 == 1) or ((i+4)/9 == 1) or (i == 6) or (i == 42) or (i == 58)):
             for roll in range(1,7):
-                #print('r: ' + str(roll))
                 n = roll
                 n_old = 0
                 while(n != n_old):
@@ -127,6 +115,7 @@ def gen_ganzenbord():
                 res.append(rule)
     return res
 
+
 def ganzenbord():
     rules = gen_ganzenbord()
     accepting = ['63']
@@ -134,6 +123,34 @@ def ganzenbord():
     g.format = 'pdf'
     g.render(directory='graphviz_renders', view=True)
     FSM.eval_FSM_rand(rules, accepting, 1, 6)
+
+
+def koffieautomaat():
+    reg = [99]
+    rules = [
+        ['s1','strt','k'],
+        ['k','k_f','s1'],
+        ['k','k_s','op'],
+        ['op','tim','s1'],
+        ['op','op_t','t_pay'],
+        ['op', 'op_c', 'c_pay'],
+        ['c_pay', 'pay_f', 'no_pay'],
+        ['c_pay', 'pay_s', 'c'],
+        ['c','r0>=01','r0-=01'],
+        ['c','r0==00', 'bc'],
+        ['bc',' ','s1'],
+        ['r0-=01', ' ', 's1'],
+        ['t_pay','pay_s','dt'],
+        ['t_pay','pay_f','no_pay'],
+        ['dt',' ','s1'],
+        ['no_pay',' ','s1'],
+    ]
+    accepting = ['r0-=01','dt']
+    g = FSM.graph(rules, accepting, 'dot', 'LR', reg)
+    g.format = 'pdf'
+    g.render(directory='graphviz_renders', view=True)
+    print('q om te stoppen')
+    FSM.eval_FSM_vending(rules, accepting, reg)
 
 
 def game_over_check(board):
@@ -198,20 +215,12 @@ def tictactoe(n):
     rules, accepting = gen_tictactoe(n)
     #print(accepting)
     g = FSM.graph(rules, accepting, 'dot')
-    g.format = 'bmp'
-    print(time.time() - t)
+    g.format = 'pdf'
+    #print(time.time() - t)
     g.render(directory='graphviz_renders', view=True)
-    print(time.time() - t)
+    #print(time.time() - t)
+    FSM.eval_FSM_IO(rules, accepting)
 
-#board = np.array([[1,0,0],
-#                  [1,-1,1],
-#                  [-1,0,0]])
 
-# board = np.array([[1,0],
-#                   [-1,0]])
-
-#print(game_over_check(board))
-#board_to_string(board)
-#odd_a_even_b('abb')
-#ganzenbord()
-#tictactoe(2)
+#print('r0==00'[4:6])
+#koffieautomaat()
