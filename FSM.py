@@ -1,11 +1,23 @@
-import math
 import random
-import numpy as np
 import graphviz
 
 
-# evalueert de FSM dmv tape input
-def eval_FSM_tape(rules: [], tape: [], accepting):
+def eval_FSM_tape(rules, tape, accepting):
+    """
+    Evalueert een FSM aan de hand van een tape.
+
+    Er wordt door alle inputs in de lijst geloopt; bij elke input + state wordt de bijbehorende rule gevonden,
+    waarna de state wordt overschreven door de volgende state in deze rule.
+    Als er geen bijbehorende rule is, is impliciet een doom state berijkt.
+    Alle states en of deze accepting zijn, en de conditie voor de overgang naar de volgende state worden geprint
+    True wanneer de final state accepting is, False otherwise
+
+    :param rules: een lijst van rules binnen de FSM; bijvoorbeeld de rule ['A','1','B'] representeerd de edge (A)-1->(B) ([[]])
+    :param tape: inputs voor de FSM ([])
+    :param accepting: accepting states ([])
+
+    :return: True wanneer de laatste state accepting is, False otherwise (bool)
+    """
     state = rules[0][0]
     print(str(state) + ' ' + str(str(state) in accepting))
     i = 0
@@ -32,8 +44,17 @@ def eval_FSM_tape(rules: [], tape: [], accepting):
     return state in accepting
 
 
-# evalueert de FSM met input van de gebruiker
-def eval_FSM_IO(rules: [], accepting):
+def eval_FSM_IO(rules, accepting):
+    """
+    evalueert de FSM met input van de gebruiker
+
+    Functioneren vergelijkbaar met vorige functie, gebruikt nu alleen input() ipv een tape
+
+    :param rules: rules binnen de FSM ([[]])
+    :param accepting: accepting states ([])
+
+    :return: True wanneer de laatste state accepting is, False otherwise (bool)
+    """
     state = rules[0][0]
     doom = False
     print(str(state) + ' ' + str(str(state) in accepting))
@@ -53,7 +74,20 @@ def eval_FSM_IO(rules: [], accepting):
 
 
 # evalueert de FSM met willekeurige input
-def eval_FSM_rand(rules: [], accepting, randl, randh):
+def eval_FSM_rand(rules, accepting, randl, randh):
+    """
+    evalueert de FSM met input willekeurige input
+
+    Functioneren vergelijkbaar met vorige functie maar dan random.
+    Overgangscondities **moeten** integers zijn.
+
+    :param rules: rules binnen de FSM ([[]])
+    :param accepting: accepting states ([])
+    :param randl: lower limit voor rng (inclusief) (int)
+    :param randl: upper limit voor rng (inclusief) (int)
+
+    :return: True wanneer de laatste state accepting is, False otherwise (bool)
+    """
     state = rules[0][0]
     doom = False
     print(str(state) + ' ' + str(str(state) in accepting))
@@ -74,6 +108,15 @@ def eval_FSM_rand(rules: [], accepting, randl, randh):
 
 
 def update_reg(reg, node):
+    """
+    hulpfunctie voor eval_FSM_vending
+
+    updatet de registers aan de hand van de node label e.g. bij 'r0+=1' gaat de register op positie 0 in de lijst 1 omhoog
+
+    :param reg: registers ([int])
+    :param node: node label (str)
+    :return: geüpdatete registers ([int])
+    """
     if(len(node)==6):
         if(node[2:4] == '+='):
             reg[int(node[1])] += int(node[4:6])
@@ -146,7 +189,6 @@ def eval_FSM_vending(rules: [], accepting, registers):
                 print('druk op Enter om door te gaan')
                 c = True
                 c_state = rule[2]
-                break
 
         condition = input('choice: ')
         if(condition == 'q'): break
@@ -160,18 +202,32 @@ def eval_FSM_vending(rules: [], accepting, registers):
         else:
             state = c_state
             print('state:\t' + str(state))
-            break
 
     return state in accepting
 
 
-# visualiseert de graaf
 def graph(rules, accepting, layout='dot', rankdir='TB', registers=None):
+    """
+    maakt een Digraph object van een FSM
+
+    loopt door alle rules heen en voegt een edge toe per loop;
+    houdt een lijst van nodes bij en voegt een node toe wanneer deze nog niet in de lijst zit;
+    wanneer een node in accepting zit krijgt deze een dubbele ring
+
+    :param rules: rules binnen de FSM ([[]])
+    :param accepting: accepting states ([])
+    :param layout: layout engine, default='dot' (str)
+        - 'dot'      hierarchical/layered graph
+        - 'neato'    spring model
+        - 'fdp'      force-directed placement
+        - 'circo'    circular graph
+    :param rankdir: layout direction, alleen voor 'dot', default='TB' (str)
+    :param registers: registers voor als de FSM informatie moet bijhouden, default=None ([int])
+    :return: directed graph object van FSM (graphviz.Digraph)
+    """
+
     res = graphviz.Digraph('FSM')
-    res.graph_attr['layout'] = layout   #'dot'      hierarchical/layered/directed graph
-                                        #'neato'    spring model
-                                        #'fdp'      force-directed placement
-                                        #'circo'    circular graph
+    res.graph_attr['layout'] = layout
     if(layout=='dot'):
         res.graph_attr['rankdir'] = rankdir
 
@@ -210,6 +266,10 @@ def graph(rules, accepting, layout='dot', rankdir='TB', registers=None):
 
 
 def test_layout(s):
+    """
+    test functie
+    """
+
     g = graphviz.Digraph('FSM')
     g.node('A', s, shape='circle', fontname='Consolas')
     g.node('B', '<bbbbb>', shape='circle')
